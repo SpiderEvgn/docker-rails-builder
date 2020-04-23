@@ -1,7 +1,7 @@
 FROM ruby:2.6.5-alpine
 
-RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/main > /etc/apk/repositories
-RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/community >> /etc/apk/repositories
+#RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/main > /etc/apk/repositories
+#RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/community >> /etc/apk/repositories
 
 RUN apk add --update --no-cache \
     postgresql-client \
@@ -9,5 +9,7 @@ RUN apk add --update --no-cache \
     tzdata \
     file \
     && rm -rf /var/cache/apk/*
+
+COPY Adobe-FangSong-Std-R-2.otf /usr/share/fonts/truetype/custom/
 
 WORKDIR /app
