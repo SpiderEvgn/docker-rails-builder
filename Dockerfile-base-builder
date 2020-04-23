@@ -1,0 +1,36 @@
+FROM ruby:2.6.5-alpine
+LABEL maintainer="xiajun.zhang@usingnow.com"
+
+RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/main > /etc/apk/repositories
+RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.11/community >> /etc/apk/repositories
+
+# Add basic packages
+RUN apk add --update --no-cache \
+    build-base \
+    postgresql-dev \
+    imagemagick \
+    git \
+    nodejs-current \
+    npm \
+    yarn \
+    tzdata \
+    file \
+    bash \
+    # 某些编译会用到 python
+    python \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+COPY Adobe-FangSong-Std-R-2.otf /usr/share/fonts/truetype/custom/
+
+COPY Gemfile* /app/
+RUN bundle config mirror.https://rubygems.org/ https://gems.ruby-china.com/
+RUN bundle install -j4 --retry 3 && \
+    rm -rf /usr/local/bundle/cache/*.gem && \
+    find /usr/local/bundle/gems/ -name "*.c" -delete && \
+    find /usr/local/bundle/gems/ -name "*.o" -delete
+
+COPY package.json yarn.lock /app/
+RUN yarn config set registry http://registry.npm.taobao.org/
+RUN yarn install
